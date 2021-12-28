@@ -1,15 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Settings : MonoBehaviour
+public class Settings
 {
-	public Color playerColor;
-	public int level = 0;
-	public Vector3 cameraPosition;
-	public Quaternion cameraRotation;
-	private void Awake()
-	{
-		DontDestroyOnLoad(this.gameObject);
-	}
+	public static Color playerColor;
+	public static int level = 0;
+	public static Vector3 cameraPosition;
+	public static Quaternion cameraRotation;
 }

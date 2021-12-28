@@ -27,16 +27,18 @@ public class LoadNextScene : MonoBehaviour
 		if (isLerping)
 		{
 			foreach (Text fadeText in fadeTexts)
+			{
 				fadeText.color -= new Color(0, 0, 0, 1 - totalLerp);
+			}
+
 			cameraRotate.offset -= Vector3.Scale(cameraRotate.offset, Vector3.forward * Time.deltaTime * lerpAmount);
 			cameraRotate.rotationSpeed = angleIncreaseNeeded;
 			totalLerp += lerpAmount * Time.deltaTime * (1 - totalLerp);
 			if (totalLerp > 0.99f)
 			{
 				//save current camera transform
-				Settings settings = (GameObject.Find("Settings") != null) ? GameObject.Find("Settings").GetComponent<Settings>() : null;
-				settings.cameraPosition = camera.position;
-				settings.cameraRotation = camera.rotation;
+				Settings.cameraPosition = camera.position;
+				Settings.cameraRotation = camera.rotation;
 
 
 				SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);

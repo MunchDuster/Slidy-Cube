@@ -4,25 +4,14 @@ using UnityEngine;
 
 public abstract class TripWire : MonoBehaviour
 {
-	[HideInInspector]
-	public GameObject player;
-
 	private bool haventGoneOff = true;
-	private Movement playerMovement;
 
-	private void Update()
+	private void OnTriggerEnter(Collider collider)
 	{
-		if (player != null)
+		if (collider.gameObject.tag == "Player")
 		{
-			if (playerMovement == null)
-				playerMovement = player.GetComponent<Movement>();
-
-			if (player.transform.position.z >= transform.position.z && haventGoneOff && playerMovement.isGaming)
-			{
-				haventGoneOff = false;
-				OnTrip();
-			}
+			OnTrip(collider.gameObject);
 		}
 	}
-	protected abstract void OnTrip();
+	protected abstract void OnTrip(GameObject playerObj);
 }

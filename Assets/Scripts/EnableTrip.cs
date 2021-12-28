@@ -1,15 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnableTrip : TripWire
 {
-	public GameObject[] enableOnTrip;
-	protected override void OnTrip()
+	public UnityEvent OnTripped;
+	protected override void OnTrip(GameObject playerObj)
 	{
-		foreach (GameObject objec in enableOnTrip)
-		{
-			objec.SetActive(true);
-		}
+		OnTripped.Invoke();
 	}
 }

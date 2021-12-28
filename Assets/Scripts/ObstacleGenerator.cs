@@ -29,15 +29,20 @@ public class ObstacleGenerator : MonoBehaviour
 	public GameObject player;
 	public GameObject[] winStuff;
 
+	[Header("Refs")]
 	public Transform groundTransform;
 	public Renderer groundRenderer;
-	void Start()
+
+	public delegate void OnEvent(float num);
+
+	public OnEvent OnFinishedGeneratingLevel;
+
+	private float levelSize = 0;
+
+	private void Start()
 	{
-		Settings settings = (GameObject.Find("Settings") != null) ? GameObject.Find("Settings").GetComponent<Settings>() : null;
-		if (settings != null)
-		{
-			obstaclesToSpawn += (int)(obstacleIncreasePerLevel * settings.level);
-		}
+		obstaclesToSpawn += (int)(obstacleIncreasePerLevel * Settings.level);
+
 		//set the space behind the player
 		groundTransform.localScale = new Vector3(1, 1, groundStartSpace);
 		//make it so that the ground ends at z = 0
@@ -61,41 +66,72 @@ public class ObstacleGenerator : MonoBehaviour
 	int spawnedObstacles = 0;
 	int lastObstacle;
 	bool done = false;
-	void Update()
+	private void Update()
 	{
-		if (spawnedObstacles < obstaclesToSpawn) SpawnObstacle();
+		if (spawnedObstacles < obstaclesToSpawn)
+		{
+			SpawnObstacle();
+			if (Random.Range(0f, 1f) <= funStuffSpawnChance)
+			{
+				GameObject prefab = funStuff[(int)Mathf.Round(Random.Range(0f, funStuff.Length - 1f))];
+				Vector3 position = new Vector3(Random.Range(-4, 4), 0, GetObstacleSpawnPoint());
+
+				Instantiate(prefab, position, Quaternion.identity, transform);
+			}
+		}
 		else if (!done)
 		{
 			SpawnEnd();
 		}
 	}
-	void SpawnEnd()
+	private float GetObstacleSpawnPoint()
+	{
+		return startDistance + spawnDistance * spawnedObstacles - 1;
+	}
+	private void SpawnEnd()
 	{
 		done = true;
+
+		//Spawn the end part
 		GameObject endSpawn = Instantiate(end, new Vector3(0, 0, startDistance + spawnDistance * (spawnedObstacles + 1)), Quaternion.identity, transform);
 
-		foreach (TripWire trip in endSpawn.GetComponents<TripWire>())
-		{
-			trip.player = player;
-		}
+		//Setup the trip wire
 		player.GetComponent<WinLose>().winGate = endSpawn.transform;
 
+		//Get the trigger point on the end
+		Transform triggerPoint = endSpawn.GetComponent<End>().triggerPoint;
+
+		//Call OnFinishedGeneratingLevel event
+		if (OnFinishedGeneratingLevel != null) OnFinishedGeneratingLevel(triggerPoint.position.z);
 	}
-	int getIndex(int top, int exception)
+	private int getIndex(int top, int exception)
 	{
 		int num = Random.Range(0, top - 1);
 		return (num >= exception) ? num + 1 : num;
 	}
-	void SpawnObstacle()
+	private void SpawnObstacle()
 	{
 		spawnedObstacles++;
 
+		ResizeGround();
+
+		GameObject chosenObstacle = ChooseObstacle();
+
+		GameObject spawnObj = Instantiate(chosenObstacle, new Vector3(0, 0, startDistance + spawnDistance * spawnedObstacles), Quaternion.identity, transform);
+	}
+
+	private void ResizeGround()
+	{
 		//move it forward half its size increase
 		groundTransform.localScale += new Vector3(0, 0, spawnDistance);
 		//make it so that the ground ends at z = 0
 		groundTransform.position += new Vector3(0, 0, spawnDistance / 2);
 		//add more tiling the texture to match scale increase
 		groundRenderer.material.mainTextureScale += new Vector2(0, spawnDistance);
+	}
+	private GameObject ChooseObstacle()
+	{
+		//Choose obstacle
 		int index = 0;
 		if (obstacles[lastObstacle] == pairToAvoid.part1)
 		{
@@ -118,17 +154,8 @@ public class ObstacleGenerator : MonoBehaviour
 		else
 			index = getIndex(obstacles.Length - 1, lastObstacle);
 
-
-
-		GameObject spawnObj = Instantiate(obstacles[index], new Vector3(0, 0, startDistance + spawnDistance * spawnedObstacles), Quaternion.identity, transform);
 		lastObstacle = index;
 
-		foreach (TripWire trip in spawnObj.GetComponents<TripWire>())
-		{
-			trip.player = player;
-		}
-
-		if (Random.Range(0f, 1f) <= funStuffSpawnChance)
-			Instantiate(funStuff[(int)Mathf.Round(Random.Range(0f, funStuff.Length - 1f))], new Vector3(Random.Range(-4, 4), 0, startDistance + spawnDistance * spawnedObstacles - 1), Quaternion.identity, transform);
+		return obstacles[index];
 	}
 }

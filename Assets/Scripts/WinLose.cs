@@ -1,27 +1,29 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class WinLose : MonoBehaviour
 {
-	public GameObject[] enableOnWin;
-	public GameObject[] disableOnWin;
-	public GameObject[] enableOnLose;
-	public GameObject[] disableOnLose;
 	public Text finalScoreUI;
 
-	private Movement movement;
+	[Header("Events")]
+	public UnityEvent OnWin;
+	public UnityEvent OnLose;
 
 	[HideInInspector]
 	public Transform winGate;
 
+
+	private Movement movement;
 	private Settings settings;
+
+
 	private void Start()
 	{
-
-		settings = (GameObject.Find("Settings") != null) ? GameObject.Find("Settings").GetComponent<Settings>() : null;
+		GameObject settingsGameObject = GameObject.Find("Settings");
+		settings = (settingsGameObject != null) ? settingsGameObject.GetComponent<Settings>() : null;
 
 		movement = GetComponent<Movement>();
 	}
@@ -42,17 +44,11 @@ public class WinLose : MonoBehaviour
 	}
 	private void Lose()
 	{
+		if (OnLose != null) OnLose.Invoke();
+
 		if (movement.isGaming)
 		{
 			movement.isGaming = false;
-			//enable lose screen
-			foreach (GameObject loseScreen in enableOnLose)
-				loseScreen.SetActive(true);
-
-
-			//disable all gameobjects in the disableOnLose list
-			foreach (GameObject thiing in disableOnLose)
-				thiing.SetActive(false);
 
 			//show the score text
 			finalScoreUI.text = ((int)(transform.position.z * movement.scoreMultiplier)).ToString();
@@ -69,33 +65,24 @@ public class WinLose : MonoBehaviour
 	{
 		yield return new WaitForSeconds(3);
 
-
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
 
 	void Win()
 	{
+		if (OnWin != null) OnWin.Invoke();
+
 		//player has won, enable isgaming to remove player input to cube and stop camera tracking and prevent losing/wining again
 		movement.isGaming = false;
-
-		//enable all enableOnWin
-		foreach (GameObject win in enableOnWin)
-			win.SetActive(true);
-
-		//enable all enableOnWin
-		foreach (GameObject win in disableOnWin)
-			win.SetActive(false);
 
 		//make player have friction
 		GetComponent<Collider>().material = null;
 
-		//relaod scene after 3 seconds
+		//reload scene after 3 seconds
 		StartCoroutine(WaitAndReload());
 
-
-
 		//Increase level in settings gameobject
-		if (settings != null) settings.level += 1;
+		Settings.level += 1;
 	}
 
 }
