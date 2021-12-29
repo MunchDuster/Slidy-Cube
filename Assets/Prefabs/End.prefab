@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -436,7 +436,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -497,9 +497,10 @@ GameObject:
   m_Component:
   - component: {fileID: 974787832751630707}
   - component: {fileID: 209619917991865136}
-  - component: {fileID: 7783868156941800099}
   - component: {fileID: 6668382289554764533}
   - component: {fileID: 659999715434865954}
+  - component: {fileID: 4475767274270213191}
+  - component: {fileID: 6685260872589469449}
   m_Layer: 0
   m_Name: End
   m_TagString: Obstacle
@@ -536,48 +537,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 974787832751630718}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 254d7bf802f3f5f4cb056aef99aa2950, type: 3}
+  m_Script: {fileID: 11500000, guid: 7bf01e34210ab9241abca21a34e41589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnTripped:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2356680361641910651}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 659999715434865954}
-        m_TargetAssemblyTypeName: Explosion, Assembly-CSharp
-        m_MethodName: ExplodeAll
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 3079446352053322463}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
---- !u!114 &7783868156941800099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 974787832751630718}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be1d9201e5195a14891a4776ff8ba04f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  tripwire: {fileID: 6685260872589469449}
   triggerPoint: {fileID: 508673259246972372}
 --- !u!65 &6668382289554764533
 BoxCollider:
@@ -609,6 +572,47 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 55
+--- !u!114 &4475767274270213191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974787832751630718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc016956b4ff61240a8ee59f23d740df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thickness: 8
+--- !u!114 &6685260872589469449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974787832751630718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ea2af38b3e325f40b7beeaaa4d9fa80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyTime: 2
+  OnTrippedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 659999715434865954}
+        m_TargetAssemblyTypeName: Explosion, Assembly-CSharp
+        m_MethodName: ExplodeAll
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 3079446352053322463}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1085747078271521397
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,7 +782,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -1583,7 +1587,7 @@ ParticleSystem:
     m_BurstCount: 1
     m_Bursts:
     - serializedVersion: 2
-      time: 0.5
+      time: 0.25
       countCurve:
         serializedVersion: 2
         minMaxState: 0
@@ -3291,13 +3295,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -6138,7 +6142,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6252,7 +6256,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6631,7 +6635,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6890,7 +6894,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7004,7 +7008,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7215,7 +7219,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7768,7 +7772,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7882,7 +7886,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8141,7 +8145,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8255,7 +8259,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8475,7 +8479,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -10988,13 +10992,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -13627,7 +13631,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13741,7 +13745,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13961,7 +13965,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -14766,7 +14770,7 @@ ParticleSystem:
     m_BurstCount: 1
     m_Bursts:
     - serializedVersion: 2
-      time: 0.5
+      time: 0.25
       countCurve:
         serializedVersion: 2
         minMaxState: 0
@@ -16474,13 +16478,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -18830,7 +18834,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -19058,7 +19062,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -19278,7 +19282,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -21791,13 +21795,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -24054,7 +24058,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -24270,7 +24274,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -24490,7 +24494,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -25295,7 +25299,7 @@ ParticleSystem:
     m_BurstCount: 1
     m_Bursts:
     - serializedVersion: 2
-      time: 1
+      time: 0.5
       countCurve:
         serializedVersion: 2
         minMaxState: 0
@@ -27003,13 +27007,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -29306,7 +29310,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -29596,7 +29600,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5fa8f6566a7fae3479048f061d85846b, type: 2}
+  - {fileID: 2100000, guid: d8591a5973a2d704ca0ed544d09be266, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -29816,7 +29820,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 6
+      scalar: 15
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -30621,7 +30625,7 @@ ParticleSystem:
     m_BurstCount: 1
     m_Bursts:
     - serializedVersion: 2
-      time: 1
+      time: 0.5
       countCurve:
         serializedVersion: 2
         minMaxState: 0
@@ -32329,13 +32333,13 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxis: 0
     inWorldSpace: 0
-    multiplyDragByParticleSize: 1
-    multiplyDragByParticleVelocity: 1
+    multiplyDragByParticleSize: 0
+    multiplyDragByParticleVelocity: 0
     dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.1
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2

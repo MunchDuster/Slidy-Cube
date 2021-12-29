@@ -1,10 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public abstract class TripWire : MonoBehaviour
+public class TripWire : MonoBehaviour
 {
-	private bool haventGoneOff = true;
+	public float destroyTime;
+
+	public UnityEvent OnTrippedEvent;
+
+	public delegate void OnEvent(GameObject caller);
+	public event OnEvent OnTripped;
+
 
 	private void OnTriggerEnter(Collider collider)
 	{
@@ -13,5 +18,16 @@ public abstract class TripWire : MonoBehaviour
 			OnTrip(collider.gameObject);
 		}
 	}
-	protected abstract void OnTrip(GameObject playerObj);
+
+	protected void OnTrip(GameObject playerObj)
+	{
+		OnTrippedEvent.Invoke();
+		if (OnTripped != null) OnTripped(gameObject);
+
+		Destroy(gameObject, destroyTime);
+
+		//Remove all connections to delegates
+		OnTripped = null;
+		OnTrippedEvent = null;
+	}
 }

@@ -4,54 +4,54 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
+
 public class WinLose : MonoBehaviour
 {
 	public Text finalScoreUI;
 
 	[Header("Events")]
 	public UnityEvent OnWin;
+	public UnityEvent OnLevelUp;
 	public UnityEvent OnLose;
 
-	[HideInInspector]
-	public Transform winGate;
-
-
 	private Movement movement;
-	private Settings settings;
 
 
 	private void Start()
 	{
-		GameObject settingsGameObject = GameObject.Find("Settings");
-		settings = (settingsGameObject != null) ? settingsGameObject.GetComponent<Settings>() : null;
-
 		movement = GetComponent<Movement>();
 	}
 	// Update is called once per frame
-	void LateUpdate()
+	private void LateUpdate()
 	{
 		if (movement.isGaming)
 		{
 			if (transform.position.y < -1)
 				Lose();
-			if (winGate != null && transform.position.z >= winGate.position.z)
-				Win();
 		}
 	}
 	private void OnCollisionEnter(Collision other)
 	{
-		if (other.gameObject.tag == "Obstacle") Lose();
+
+		if (other.gameObject.tag == "Untagged" || !movement.isGaming) return;
+		else if (other.gameObject.tag == "Obstacle") Lose();
+		else if (other.gameObject.tag == "Level") LevelUp();
+		else if (other.gameObject.tag == "Finish") Win();
 	}
+
 	private void Lose()
 	{
 		if (OnLose != null) OnLose.Invoke();
 
 		if (movement.isGaming)
 		{
-			movement.isGaming = false;
-
 			//show the score text
 			finalScoreUI.text = ((int)(transform.position.z * movement.scoreMultiplier)).ToString();
+
+			//reset time.timeScale
+			Time.timeScale = 1;
+
+			Settings.level = 1;
 
 			//make player have friction
 			GetComponent<Collider>().material = null;
@@ -59,30 +59,26 @@ public class WinLose : MonoBehaviour
 			//relaod scene after 3 seconds
 			StartCoroutine(WaitAndReload());
 		}
-
 	}
-	IEnumerator WaitAndReload()
+	private void LevelUp()
+	{
+		if (OnLevelUp != null) OnLevelUp.Invoke();
+	}
+	private void Win()
+	{
+		if (OnWin != null) OnWin.Invoke();
+
+		//Reset level
+		Settings.level = 1;
+
+		//reload scene after 3 seconds
+		StartCoroutine(WaitAndReload());
+	}
+
+	private IEnumerator WaitAndReload()
 	{
 		yield return new WaitForSeconds(3);
 
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
-
-	void Win()
-	{
-		if (OnWin != null) OnWin.Invoke();
-
-		//player has won, enable isgaming to remove player input to cube and stop camera tracking and prevent losing/wining again
-		movement.isGaming = false;
-
-		//make player have friction
-		GetComponent<Collider>().material = null;
-
-		//reload scene after 3 seconds
-		StartCoroutine(WaitAndReload());
-
-		//Increase level in settings gameobject
-		Settings.level += 1;
-	}
-
 }

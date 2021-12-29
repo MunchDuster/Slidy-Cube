@@ -8,17 +8,10 @@ public class CameraRotate : MonoBehaviour
 	public float rotationSpeed;
 	public new Transform camera;
 
-
 	private float angle = 0;
-	private Settings settings;
-	private void Start()
-	{
-		//Increase level in settings gameobject
-		settings = (GameObject.Find("Settings") != null) ? GameObject.Find("Settings").GetComponent<Settings>() : null;
-	}
-	private void LateUpdate()
-	{
 
+	private void Update()
+	{
 		angle += Time.deltaTime * rotationSpeed;
 
 		camera.position = rotateVector(offset, angle);

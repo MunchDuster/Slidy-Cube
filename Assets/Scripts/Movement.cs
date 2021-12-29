@@ -14,9 +14,6 @@ public class Movement : MonoBehaviour
 	[HideInInspector]
 	public bool isGaming = true;
 
-	[Header("UI")]
-	public TextMeshProUGUI levelUI;
-
 	private Rigidbody rb;
 	private bool isLerping = true; //Lerp camera to offset
 
@@ -25,9 +22,6 @@ public class Movement : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody>();
 		originalRotation = camera.rotation;
-
-
-		levelUI.text = "Level " + (Settings.level + 1);
 
 		camera.rotation = Settings.cameraRotation;
 		camera.position = Settings.cameraPosition;
