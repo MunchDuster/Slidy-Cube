@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /*
@@ -10,31 +11,34 @@ public class LevelGenerator : MonoBehaviour
 	[System.Serializable]
 	public struct BadCombo
 	{
-		public GameObject part1;
-		public GameObject part2;
+		public LevelPiece part1;
+		public LevelPiece part2;
+
+
+		public bool Contains(LevelPiece ob1, LevelPiece ob2)
+		{
+			return (part1 == ob1 && part2 == ob2) || (part1 == ob2 && part2 == ob1);
+		}
 	}
 
 	[Header("Main settings")]
-	public float startDistance = 30;
-	public float spawnDistance = 10;
 	public int obstaclePrefabsToSpawn = 20;
-	public float groundEndSpace = 10;
-	public float groundStartSpace = 5;
 	[Range(0f, 1f)]
 	public float bonusPrefabsSpawnChance = 0.2f;
 
-	[Header("Level Settings")]
 	public float obstacleIncreasePerLevel = 2;
 
-	public GameObject[] obstaclePrefabs;
+	[Header("Inner Refs")]
+	public LevelPiece startGamePiece;
+	public LevelPiece levelEndPrefab;
+
+	[Space(10)]
+
+	public LevelPiece[] obstaclePrefabs;
 	public GameObject[] bonusPrefabs;
 
-	public BadCombo pairToAvoid;
-	public GameObject levelEndPrefab;
+	public BadCombo[] badCombos;
 
-	[Header("Refs")]
-	public Transform groundTransform;
-	public Renderer groundRenderer;
 
 	public delegate void OnLevelEvent(float start, float end);
 	public OnLevelEvent OnFinishedGeneratingLevel;
@@ -43,22 +47,16 @@ public class LevelGenerator : MonoBehaviour
 	private float totalDistance { get { return _totalDistance; } }
 	private float lastLevelEnd = 0;
 
+	private LevelPiece lastObstacle;
+
 	private void Awake()
 	{
 		Init();
 	}
 	private void Init()
 	{
-		//Init the ground//
-		//set the space behind the player
-		groundTransform.localScale = new Vector3(1, 1, groundStartSpace);
-		//make it so that the ground ends at z = 0
-		groundTransform.position = new Vector3(0, 0, -groundStartSpace / 2);
-		//add more tiling the texture to match scale increase
-		groundRenderer.material.mainTextureScale += new Vector2(0, groundStartSpace);
-
 		//Set random last obstacle
-		lastObstacleIndex = Random.Range(0, obstaclePrefabs.Length - 1);
+		lastObstacle = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length - 1)];
 	}
 
 	public LevelEnd GenerateLevel()
@@ -67,7 +65,8 @@ public class LevelGenerator : MonoBehaviour
 
 		obstaclePrefabsToSpawn += (int)(obstacleIncreasePerLevel * Settings.level);
 
-		IncreaseGroundDistance(startDistance);
+		float startDistance = startGamePiece.length;
+		_totalDistance += startDistance;
 
 		for (int i = 0; i < obstaclePrefabs.Length; i++)
 		{
@@ -80,19 +79,13 @@ public class LevelGenerator : MonoBehaviour
 		}
 		return SpawnEnd();
 	}
-	// Update is called once per frame
-	int spawnedObstacles = 0;
-	int lastObstacleIndex;
-	bool done = false;
 
 	private LevelEnd SpawnEnd()
 	{
-		done = true;
-
 		Vector3 point = new Vector3(0, 0, totalDistance);
 
 		//Spawn the end part
-		GameObject endSpawn = Instantiate(levelEndPrefab, point, Quaternion.identity, transform);
+		GameObject endSpawn = Instantiate(levelEndPrefab.gameObject, point, Quaternion.identity, transform);
 
 		LevelEnd levelEnd = endSpawn.GetComponent<LevelEnd>();
 		//Get the trigger point on the end
@@ -103,23 +96,16 @@ public class LevelGenerator : MonoBehaviour
 
 		return levelEnd;
 	}
-	private int getIndex(int top, int exception)
-	{
-		int num = Random.Range(0, top - 1);
-		return (num >= exception) ? num + 1 : num;
-	}
 	private void SpawnObstacle()
 	{
-		spawnedObstacles++;
-
-		GameObject chosenObstacle = ChooseObstacle();
+		LevelPiece chosenObstacle = ChooseObstacle();
 		Vector3 point = new Vector3(0, 0, totalDistance);
 
-		GameObject spawnObj = Instantiate(chosenObstacle, point, Quaternion.identity, transform);
+		GameObject spawnObj = Instantiate(chosenObstacle.gameObject, point, Quaternion.identity, transform);
 
-		Obstacle obstacle = spawnObj.GetComponent<Obstacle>();
+		LevelPiece obstacle = spawnObj.GetComponent<LevelPiece>();
 
-		IncreaseGroundDistance(spawnDistance + obstacle.thickness);
+		_totalDistance += obstacle.length;
 	}
 	private void SpawnBonus()
 	{
@@ -128,44 +114,35 @@ public class LevelGenerator : MonoBehaviour
 
 		Instantiate(prefab, position, Quaternion.identity, transform);
 	}
-	private void IncreaseGroundDistance(float distance)
+
+	private LevelPiece ChooseObstacle()
 	{
-		//move it forward half its size increase
-		groundTransform.localScale += new Vector3(0, 0, distance);
-		//make it so that the ground ends at z = 0
-		groundTransform.position += new Vector3(0, 0, distance / 2);
-		//add more tiling the texture to match scale increase
-		groundRenderer.material.mainTextureScale += new Vector2(0, distance);
+		///Make list of available obstacles///
 
-		_totalDistance += distance;
-	}
-	private GameObject ChooseObstacle()
-	{
-		//Choose obstacle
-		int index = 0;
-		if (obstaclePrefabs[lastObstacleIndex] == pairToAvoid.part1)
+		//Create copy of obstacles array
+		List<LevelPiece> availableObstacles = obstaclePrefabs.Clone() as List<LevelPiece>;
+
+		Debug.Log("List of available obstacles: " + availableObstacles);
+		Debug.Log("Length of available obstacles: " + availableObstacles.Count);
+
+		//Filter out bad combos
+		foreach (LevelPiece obstacle in availableObstacles)
 		{
-			for (int i = 0; i < obstaclePrefabs.Length; i++)
+			foreach (BadCombo badCombo in badCombos)
 			{
-				if (obstaclePrefabs[i] == pairToAvoid.part2)
-					index = getIndex(obstaclePrefabs.Length - 1, i);
+				if (badCombo.Contains(lastObstacle, obstacle))
+				{
+					availableObstacles.Remove(obstacle);
+				}
 			}
-
 		}
-		else if (obstaclePrefabs[lastObstacleIndex] == pairToAvoid.part2)
-		{
-			for (int i = 0; i < obstaclePrefabs.Length; i++)
-			{
-				if (obstaclePrefabs[i] == pairToAvoid.part1)
-					index = getIndex(obstaclePrefabs.Length - 1, i);
-			}
 
-		}
-		else
-			index = getIndex(obstaclePrefabs.Length - 1, lastObstacleIndex);
+		///Choose random from available///
 
-		lastObstacleIndex = index;
+		//Choose random index
+		int index = Random.Range(0, availableObstacles.Count);
 
-		return obstaclePrefabs[index];
+		//Return chosen by index
+		return availableObstacles[index];
 	}
 }
