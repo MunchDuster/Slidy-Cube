@@ -14,12 +14,12 @@ public class WinLose : MonoBehaviour
 	public UnityEvent OnLevelUp;
 	public UnityEvent OnLose;
 
-	private Movement movement;
+	private PlayerMovement movement;
 
 
 	private void Start()
 	{
-		movement = GetComponent<Movement>();
+		movement = GetComponent<PlayerMovement>();
 	}
 	// Update is called once per frame
 	private void LateUpdate()
@@ -41,10 +41,12 @@ public class WinLose : MonoBehaviour
 
 	private void Lose()
 	{
-		if (OnLose != null) OnLose.Invoke();
-
 		if (movement.isGaming)
 		{
+			movement.isGaming = false;
+
+			if (OnLose != null) OnLose.Invoke();
+
 			//show the score text
 			finalScoreUI.text = ((int)(transform.position.z * movement.scoreMultiplier)).ToString();
 

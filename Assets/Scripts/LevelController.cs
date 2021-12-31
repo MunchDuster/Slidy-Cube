@@ -19,7 +19,6 @@ public class LevelController : MonoBehaviour
 
 		end = levelGenerator.GenerateLevel();
 		end.tripwire.OnTripped += OnLevelCompleted;
-
 	}
 
 	private void OnLevelCompleted(GameObject caller)
