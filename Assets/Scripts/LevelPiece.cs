@@ -13,4 +13,6 @@ public class LevelPiece : MonoBehaviour
 			return (end.position - start.position).magnitude;
 		}
 	}
+
+	public Transform cameraAngle;
 }

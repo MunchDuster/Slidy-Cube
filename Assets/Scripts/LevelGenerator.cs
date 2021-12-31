@@ -23,8 +23,8 @@ public class LevelGenerator : MonoBehaviour
 
 	[Header("Main settings")]
 	public int obstaclePrefabsToSpawn = 20;
-	[Range(0f, 1f)]
-	public float bonusPrefabsSpawnChance = 0.2f;
+	[Range(0f, 1f)] public float bonusPrefabsSpawnChance = 0.2f;
+	[Range(0f, 1f)] public float sideThingSpawnChance = 0.8f;
 
 	public float obstacleIncreasePerLevel = 2;
 
@@ -36,11 +36,15 @@ public class LevelGenerator : MonoBehaviour
 
 	public LevelPiece[] obstaclePrefabs;
 	public GameObject[] bonusPrefabs;
+	public GameObject[] sideThings;
 
 	public BadCombo[] badCombos;
 
 	[Header("Outer Refs")]
 	public Transform pieceParent;
+
+	[HideInInspector]
+	public float lowestPointY = -1;
 
 
 	public delegate void OnLevelEvent(float start, float end);
@@ -67,6 +71,8 @@ public class LevelGenerator : MonoBehaviour
 		float startDistance = startGamePiece.length;
 		_totalDistance += startDistance;
 
+
+
 		for (int i = 0; i < obstaclePrefabs.Length; i++)
 		{
 			SpawnObstacle();
@@ -75,6 +81,11 @@ public class LevelGenerator : MonoBehaviour
 			// {
 			// 	SpawnBonus();
 			// }
+
+			if (Random.Range(0f, 1f) <= sideThingSpawnChance)
+			{
+				SpawnSideThing();
+			}
 		}
 		return SpawnEnd();
 	}
@@ -84,7 +95,7 @@ public class LevelGenerator : MonoBehaviour
 		Vector3 point = new Vector3(0, 0, totalDistance);
 
 		//Spawn the end part
-		GameObject spawnedEnd = SpawnPiece(levelEndPrefab);
+		LevelPiece spawnedEnd = SpawnPiece(levelEndPrefab);
 
 		//Get the trigger point on the end
 		LevelEnd levelEnd = spawnedEnd.GetComponent<LevelEnd>();
@@ -100,25 +111,52 @@ public class LevelGenerator : MonoBehaviour
 	{
 		LevelPiece chosenObstacle = ChooseObstacle();
 
-		GameObject instance = SpawnPiece(chosenObstacle);
+		LevelPiece instance = SpawnPiece(chosenObstacle);
 
+		float thisLowestPointY = Mathf.Min(instance.start.position.y, instance.end.position.y);
+
+		if (thisLowestPointY < lowestPointY)
+		{
+			lowestPointY = thisLowestPointY;
+		}
 
 		_totalDistance += chosenObstacle.length;
 	}
-	private GameObject SpawnPiece(LevelPiece piece)
+	private LevelPiece SpawnPiece(LevelPiece piece)
 	{
 		GameObject prefab = piece.gameObject;
 
 		Vector3 offset = piece.transform.position - piece.start.position;
 		Vector3 spawnPoint = lastObstacle.end.position + offset;
 
-		Quaternion direction = Quaternion.identity; //lastObstacle.end.rotation;
+		Quaternion offsetRot = piece.transform.rotation * piece.end.rotation;
+		Quaternion spawnRotation = offsetRot * lastObstacle.end.rotation;
 
-		GameObject instance = Instantiate(prefab, spawnPoint, direction, pieceParent);
+		GameObject instance = Instantiate(prefab, spawnPoint, spawnRotation, pieceParent);
 
 		lastObstacle = instance.GetComponent<LevelPiece>();
 
-		return instance;
+		Destroy(instance, 30);
+
+		return lastObstacle;
+	}
+
+	private void SpawnSideThing()
+	{
+		int index = Random.Range(0, sideThings.Length);
+
+		float x = (Random.value > 0.5f) ? Random.Range(30f, 60f) : -Random.Range(20f, 30f);
+		float z = Random.Range(30f, 60f);
+		float y = Random.Range(-20f, 100f);
+
+		float scale = Random.Range(0.5f, 2f);
+
+		Vector3 offset = new Vector3(x, y, z);
+		Vector3 pos = lastObstacle.end.position + offset;
+		GameObject instance = Instantiate(sideThings[index], pos, Quaternion.identity);
+		instance.transform.localScale = Vector3.one * scale;
+
+		Destroy(instance, 15);
 	}
 
 	private void SpawnBonus()
@@ -139,7 +177,9 @@ public class LevelGenerator : MonoBehaviour
 		{
 			availableObstacles.Add(obstaclePrefabs[i]);
 		}
-		Debug.Log("Available length: " + availableObstacles.Count);
+
+		//Remove last obstacle
+		availableObstacles.Remove(lastObstacle);
 
 		//Filter out bad combos
 		foreach (LevelPiece obstacle in availableObstacles)
@@ -157,9 +197,6 @@ public class LevelGenerator : MonoBehaviour
 
 		//Choose random index
 		int index = Random.Range(0, availableObstacles.Count);
-
-		Debug.Log("Max Chosen length: " + availableObstacles[availableObstacles.Count - 1]);
-
 
 		//Return chosen by index
 		return availableObstacles[index];

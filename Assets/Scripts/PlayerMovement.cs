@@ -6,10 +6,13 @@ public class PlayerMovement : MonoBehaviour
 	public float forwardSpeed = 10;
 	public float moveSideSpeed = 10;
 
-	[HideInInspector]
-	public bool isGaming = true;
+	[Space(10)]
+	public float antiSpinTorque = 1;
 
-	private Rigidbody rb;
+	[HideInInspector]
+	public bool isGaming = false;
+	[HideInInspector]
+	public Rigidbody rb;
 
 	// Start is called before the first frame update
 	private void Start()
@@ -20,9 +23,26 @@ public class PlayerMovement : MonoBehaviour
 		GetComponent<MeshRenderer>().material.color = Settings.playerColor;
 	}
 
-	// Update is called once per frame
+	// FixedUpdate is called once per physics loop
 	private void FixedUpdate()
 	{
-		if (isGaming) rb.AddForce(new Vector3(Input.GetAxis("Horizontal") * moveSideSpeed - rb.velocity.x, 0, forwardSpeed - rb.velocity.z), ForceMode.VelocityChange);
+		if (isGaming)
+		{
+			//Force
+			float moveForward = Input.GetAxis("Horizontal") * moveSideSpeed - rb.velocity.x;
+			float moveSide = forwardSpeed - rb.velocity.z;
+
+			Vector3 moveForce = new Vector3(moveForward, 0, moveSide);
+
+			rb.AddForce(moveForce, ForceMode.VelocityChange);
+
+			//Torque
+			float reAlignmentTorque = -transform.rotation.y * antiSpinTorque - rb.angularVelocity.y;
+
+			Vector3 spinTorque = Vector3.up * reAlignmentTorque;
+
+			rb.AddTorque(spinTorque);
+
+		}
 	}
 }

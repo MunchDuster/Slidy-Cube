@@ -409,6 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   start: {fileID: 451743758771126315}
   end: {fileID: 270761939359988523}
+  cameraAngle: {fileID: 7382811074552583720}
 --- !u!1001 &3425674976435025827
 PrefabInstance:
   m_ObjectHideFlags: 0

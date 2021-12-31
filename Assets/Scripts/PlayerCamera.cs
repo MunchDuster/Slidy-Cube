@@ -8,6 +8,13 @@ public class PlayerCamera : MonoBehaviour
 	public float startingLerpSpeed = 4;
 	public float normalLerpSpeed = 2;
 	public float stoppingLerpSpeed = 4;
+	public LayerMask layerMask;
+
+	[Space(10)]
+	public float cameraRotLerpSpeed = 4;
+
+	[Space(10)]
+	public float maxRayscastDistance = 3;
 
 	[Space(10)]
 	public Vector3 offset = new Vector3(0, 2, -5);
@@ -18,21 +25,24 @@ public class PlayerCamera : MonoBehaviour
 	public PlayerMovement movement;
 
 	//Private Vars
-	private Quaternion originalRotation;
+	private Quaternion targetRotation;
 
 	private float speedWhenStartedSmoothing;
-
-	private float stoppingLerp = 0;
-	private float startingLerp = 0;
-
 	private delegate void OnEvent();
 	private OnEvent OnUpdate;
 
+	private Quaternion originalRotation;//Used by StartingCamera()
+	private Vector3 originalPosition;//Used by StartingCamera()
+
+	private Vector3 stoppingTarget; //Used by StoppingCamera()
 
 	// Start is called before the first frame update
 	void Start()
 	{
-		originalRotation = camera.rotation;
+		originalRotation = transform.rotation;
+		originalPosition = transform.position;
+
+		targetRotation = camera.rotation;
 
 		camera.rotation = Settings.cameraRotation;
 		camera.position = Settings.cameraPosition;
@@ -48,14 +58,23 @@ public class PlayerCamera : MonoBehaviour
 
 	private void NormalUpdateCamera()
 	{
-		camera.position = Vector3.Lerp(camera.position, new Vector3(0, transform.position.y, transform.position.z) + offset, normalLerpSpeed * Time.deltaTime);
+		UpdateCameraPosition();
+
+		//Get camera target rotation from the current LevelPiece
+		LevelPiece levelPiece = GetCurrentLevelPiece();
+
+		if (levelPiece != null)
+		{
+			Debug.Log("Setting target rotation");
+			targetRotation = levelPiece.cameraAngle.rotation;
+		}
+
+		camera.rotation = Quaternion.Slerp(camera.rotation, targetRotation, cameraRotLerpSpeed * Time.deltaTime);
 
 		//State changed check
 		if (!movement.isGaming)
 		{
-
-			speedWhenStartedSmoothing = movement.forwardSpeed;
-			stoppingLerp = 1;
+			stoppingTarget = camera.position + camera.forward * movement.rb.velocity.magnitude;
 
 			Settings.cameraPosition = camera.position;
 			Settings.cameraRotation = camera.rotation;
@@ -64,22 +83,58 @@ public class PlayerCamera : MonoBehaviour
 			OnUpdate += StoppingCamera;
 		}
 	}
+
+
+	private float totalStartLerp = 0;
 	private void StartingCamera()
 	{
-		camera.rotation = Quaternion.Lerp(camera.rotation, originalRotation, startingLerpSpeed * Time.deltaTime);
+		Vector3 targetPosition = transform.position + offset;
 
-		startingLerp += startingLerpSpeed * Time.deltaTime * (1 - startingLerp);
+		camera.rotation = Quaternion.Lerp(originalRotation, targetRotation, totalStartLerp);
+		camera.position = Vector3.Lerp(originalPosition, targetPosition, totalStartLerp);
 
 		//State changed check
-		if (startingLerp > 0.99f)
+		if (totalStartLerp > 0.99f)
 		{
+			movement.isGaming = true;
+
 			OnUpdate -= StartingCamera;
 			OnUpdate += NormalUpdateCamera;
 		}
+
+		totalStartLerp += startingLerpSpeed * Time.deltaTime;
+
 	}
+
+	private float totalStoppingLerp = 0;
 	private void StoppingCamera()
 	{
-		stoppingLerp -= stoppingLerpSpeed * Time.deltaTime;
-		camera.position = Vector3.Lerp(camera.position, camera.position + camera.forward * speedWhenStartedSmoothing, stoppingLerp * Time.deltaTime);
+		totalStoppingLerp = Mathf.Clamp01(totalStoppingLerp + stoppingLerpSpeed * Time.deltaTime);
+
+		camera.position = Vector3.Lerp(camera.position, stoppingTarget, totalStoppingLerp);
+	}
+
+	//Used by NormalUpdateCamera() and StartingCamera()
+	private void UpdateCameraPosition()
+	{
+		Vector3 targetPos = transform.position + offset;
+		camera.position = Vector3.Lerp(camera.position, targetPos, normalLerpSpeed * Time.deltaTime);
+	}
+
+	//Used by NormalUpdateCamera()
+	private LevelPiece lastLevel = null;
+	private LevelPiece GetCurrentLevelPiece()
+	{
+		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, maxRayscastDistance, layerMask))
+		{
+			LevelPiece levelPiece = (hit.transform.parent != null) ? hit.transform.parent.GetComponent<LevelPiece>() : null;
+
+			if (levelPiece != null)
+			{
+				lastLevel = levelPiece;
+				return levelPiece;
+			}
+		}
+		return lastLevel;
 	}
 }

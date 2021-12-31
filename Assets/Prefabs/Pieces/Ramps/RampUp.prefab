@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   start: {fileID: 451743758771126315}
   end: {fileID: 270761939359988523}
+  cameraAngle: {fileID: 451743758771126315}
 --- !u!1001 &3425674976435025827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -226,6 +227,18 @@ PrefabInstance:
     - target: {fileID: 2830232654001476668, guid: cdea3d3a2b6139242af3fe9b68e51095, type: 3}
       propertyPath: m_SelectedEditorRenderState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3012516396699957128, guid: cdea3d3a2b6139242af3fe9b68e51095, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9797504
+      objectReference: {fileID: 0}
+    - target: {fileID: 3012516396699957128, guid: cdea3d3a2b6139242af3fe9b68e51095, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.20022298
+      objectReference: {fileID: 0}
+    - target: {fileID: 3012516396699957128, guid: cdea3d3a2b6139242af3fe9b68e51095, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -23.1
       objectReference: {fileID: 0}
     - target: {fileID: 3191787358809083016, guid: cdea3d3a2b6139242af3fe9b68e51095, type: 3}
       propertyPath: m_LocalPosition.y

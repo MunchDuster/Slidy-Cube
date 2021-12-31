@@ -9,6 +9,9 @@ public class WinLose : MonoBehaviour
 {
 	public Text finalScoreUI;
 
+	[Header("Outer Refs")]
+	public LevelGenerator levelGenerator;
+
 	[Header("Events")]
 	public UnityEvent OnWin;
 	public UnityEvent OnLevelUp;
@@ -21,15 +24,7 @@ public class WinLose : MonoBehaviour
 	{
 		movement = GetComponent<PlayerMovement>();
 	}
-	// Update is called once per frame
-	private void LateUpdate()
-	{
-		if (movement.isGaming)
-		{
-			if (transform.position.y < -1)
-				Lose();
-		}
-	}
+
 	private void OnCollisionEnter(Collision other)
 	{
 
@@ -37,6 +32,16 @@ public class WinLose : MonoBehaviour
 		else if (other.gameObject.tag == "Obstacle") Lose();
 		else if (other.gameObject.tag == "Level") LevelUp();
 		else if (other.gameObject.tag == "Finish") Win();
+	}
+
+
+	//Check if has fallen
+	private void Update()
+	{
+		if (movement.isGaming && transform.position.y < levelGenerator.lowestPointY - 1f)
+		{
+			Lose();
+		}
 	}
 
 	private void Lose()
@@ -53,6 +58,7 @@ public class WinLose : MonoBehaviour
 			//reset time.timeScale
 			Time.timeScale = 1;
 
+			//reset level no
 			Settings.level = 1;
 
 			//make player have friction
@@ -81,6 +87,6 @@ public class WinLose : MonoBehaviour
 	{
 		yield return new WaitForSeconds(3);
 
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
 	}
 }
