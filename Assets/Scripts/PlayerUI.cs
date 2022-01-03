@@ -24,7 +24,6 @@ public class PlayerUI : MonoBehaviour
 	}
 	private void OnFinishedGeneratingLevel(float levelStart, float levelEnd)
 	{
-		Debug.Log("UI Finished Gen Level");
 		levelProgressSlider.minValue = levelStart;
 		levelProgressSlider.maxValue = levelEnd;
 	}

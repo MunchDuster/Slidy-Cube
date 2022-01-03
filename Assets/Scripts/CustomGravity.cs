@@ -17,7 +17,7 @@ public class CustomGravity : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	void Update()
+	void FixedUpdate()
 	{
 		rb.AddForce(direction * magnitude, ForceMode.Acceleration);
 	}

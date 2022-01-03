@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class LoadNextScene : MonoBehaviour
 {
-	public Text[] fadeTexts;
+	public TextMeshProUGUI[] fadeTexts;
 	public new Transform camera;
 	public Transform cameraTarget;
 	public float lerpAmount = 0.5f;
@@ -24,7 +24,7 @@ public class LoadNextScene : MonoBehaviour
 	{
 		if (isLerping)
 		{
-			foreach (Text fadeText in fadeTexts)
+			foreach (TextMeshProUGUI fadeText in fadeTexts)
 			{
 				fadeText.color -= new Color(0, 0, 0, 1 - totalLerp);
 			}

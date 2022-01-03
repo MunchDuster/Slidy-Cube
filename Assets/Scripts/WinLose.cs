@@ -29,7 +29,7 @@ public class WinLose : MonoBehaviour
 	{
 
 		if (other.gameObject.tag == "Untagged" || !movement.isGaming) return;
-		else if (other.gameObject.tag == "Obstacle") Lose();
+		else if (other.gameObject.tag == "Obstacle") Lose("Hit");
 		else if (other.gameObject.tag == "Level") LevelUp();
 		else if (other.gameObject.tag == "Finish") Win();
 	}
@@ -40,44 +40,34 @@ public class WinLose : MonoBehaviour
 	{
 		if (movement.isGaming && transform.position.y < levelGenerator.lowestPointY - 1f)
 		{
-			Lose();
+			Lose("Fell");
 		}
 	}
 
-	private void Lose()
+	private void Lose(string reason)
 	{
-		if (movement.isGaming)
-		{
-			movement.isGaming = false;
+		Debug.Log("Player lost: " + reason);
 
-			if (OnLose != null) OnLose.Invoke();
+		if (OnLose != null) OnLose.Invoke();
 
-			//show the score text
-			finalScoreUI.text = ((int)(transform.position.z * movement.scoreMultiplier)).ToString();
+		//show the score text
+		finalScoreUI.text = (transform.position.z * movement.scoreMultiplier).ToString("0.0");
 
-			//reset time.timeScale
-			Time.timeScale = 1;
+		//reset time.timeScale
+		Time.timeScale = 1;
 
-			//reset level no
-			Settings.level = 1;
-
-			//make player have friction
-			GetComponent<Collider>().material = null;
-
-			//relaod scene after 3 seconds
-			StartCoroutine(WaitAndReload());
-		}
+		//relaod scene after 3 seconds
+		StartCoroutine(WaitAndReload());
 	}
+
 	private void LevelUp()
 	{
 		if (OnLevelUp != null) OnLevelUp.Invoke();
 	}
 	private void Win()
 	{
-		if (OnWin != null) OnWin.Invoke();
 
-		//Reset level
-		Settings.level = 1;
+		if (OnWin != null) OnWin.Invoke();
 
 		//reload scene after 3 seconds
 		StartCoroutine(WaitAndReload());

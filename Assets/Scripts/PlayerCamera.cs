@@ -56,18 +56,13 @@ public class PlayerCamera : MonoBehaviour
 		OnUpdate();
 	}
 
+	//Used in main game
 	private void NormalUpdateCamera()
 	{
 		UpdateCameraPosition();
 
-		//Get camera target rotation from the current LevelPiece
-		LevelPiece levelPiece = GetCurrentLevelPiece();
-
-		if (levelPiece != null)
-		{
-			Debug.Log("Setting target rotation");
-			targetRotation = levelPiece.cameraAngle.rotation;
-		}
+		//Get camera target rotation from the movement
+		targetRotation = Quaternion.LookRotation(movement.forward, -movement.down);
 
 		camera.rotation = Quaternion.Slerp(camera.rotation, targetRotation, cameraRotLerpSpeed * Time.deltaTime);
 
@@ -117,24 +112,8 @@ public class PlayerCamera : MonoBehaviour
 	//Used by NormalUpdateCamera() and StartingCamera()
 	private void UpdateCameraPosition()
 	{
-		Vector3 targetPos = transform.position + offset;
+		Vector3 rotatedOffset = Quaternion.LookRotation(movement.forward, -movement.down) * offset;
+		Vector3 targetPos = transform.position + rotatedOffset;
 		camera.position = Vector3.Lerp(camera.position, targetPos, normalLerpSpeed * Time.deltaTime);
-	}
-
-	//Used by NormalUpdateCamera()
-	private LevelPiece lastLevel = null;
-	private LevelPiece GetCurrentLevelPiece()
-	{
-		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, maxRayscastDistance, layerMask))
-		{
-			LevelPiece levelPiece = (hit.transform.parent != null) ? hit.transform.parent.GetComponent<LevelPiece>() : null;
-
-			if (levelPiece != null)
-			{
-				lastLevel = levelPiece;
-				return levelPiece;
-			}
-		}
-		return lastLevel;
 	}
 }

@@ -13,7 +13,6 @@ public class TripWire : MonoBehaviour
 
 	private void OnTriggerEnter(Collider collider)
 	{
-		Debug.Log("Collosion");
 		if (collider.gameObject.tag == "Player")
 		{
 			OnTrip(collider.gameObject);

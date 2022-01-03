@@ -15,15 +15,15 @@ public class LevelController : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		levelGenerator.OnFinishedGeneratingLevel += (float start, float end) => { Debug.Log("Controller recieved on finished"); if (OnFinishedGeneratingLevel != null) OnFinishedGeneratingLevel(start, end); };
+		levelGenerator.OnFinishedGeneratingLevel += (float start, float end) => { if (OnFinishedGeneratingLevel != null) OnFinishedGeneratingLevel(start, end); };
 
-		end = levelGenerator.GenerateLevel();
+		end = levelGenerator.GenerateLevel().end;
 		end.tripwire.OnTripped += OnLevelCompleted;
 	}
 
 	private void OnLevelCompleted(GameObject caller)
 	{
-		end = levelGenerator.GenerateLevel();
+		end = levelGenerator.GenerateLevel().end;
 		end.tripwire.OnTripped += OnLevelCompleted;
 
 		//Increase level in settings
