@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4670560601218316126}
   - component: {fileID: 5091661422537187704}
   - component: {fileID: 1611075476220570841}
+  - component: {fileID: 8030441103503995057}
   m_Layer: 0
   m_Name: Obstacle (1)
   m_TagString: Obstacle
@@ -376,6 +377,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: -1, z: 0}
   magnitude: 9.81
+--- !u!114 &8030441103503995057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7106691667772355454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8daa252ad8155284c830605b01eef12a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7178214339829910040
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,6 +405,7 @@ GameObject:
   - component: {fileID: 7932799290653865088}
   - component: {fileID: 7997743316416293092}
   - component: {fileID: 9189788764082481024}
+  - component: {fileID: 345438240050554334}
   m_Layer: 0
   m_Name: Obstacle
   m_TagString: Obstacle
@@ -752,6 +766,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: 0, y: -1, z: 0}
   magnitude: 9.81
+--- !u!114 &345438240050554334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7178214339829910040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8daa252ad8155284c830605b01eef12a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8047107961550975073
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +828,8 @@ MonoBehaviour:
   start: {fileID: 451743758771126315}
   end: {fileID: 270761939359988523}
   lastPiece: {fileID: 0}
+  percentage: 0
+  weight: 0
   cameraAngle: {fileID: 7382811074552583720}
 --- !u!1001 &3425674976435025827
 PrefabInstance:

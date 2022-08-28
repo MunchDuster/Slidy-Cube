@@ -8,7 +8,6 @@ public class LoadNextScene : MonoBehaviour
 	public new Transform camera;
 	public Transform cameraTarget;
 	public float lerpAmount = 0.5f;
-	public CameraRotate cameraRotate;
 
 
 	private bool isLerping = false;
@@ -29,8 +28,6 @@ public class LoadNextScene : MonoBehaviour
 				fadeText.color -= new Color(0, 0, 0, 1 - totalLerp);
 			}
 
-			cameraRotate.offset -= Vector3.Scale(cameraRotate.offset, Vector3.forward * Time.deltaTime * lerpAmount);
-			cameraRotate.rotationSpeed = angleIncreaseNeeded;
 			totalLerp += lerpAmount * Time.deltaTime * (1 - totalLerp);
 			if (totalLerp > 0.99f)
 			{

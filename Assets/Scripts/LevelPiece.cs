@@ -6,8 +6,13 @@ public class LevelPiece : MonoBehaviour
 	public Transform start;
 	public Transform end;
 
-	[HideInInspector]
-	public LevelPiece lastPiece;
+	[HideInInspector] public LevelPiece lastPiece;
+
+	//Used for calc of level progress
+	[HideInInspector] public Level level;
+	[HideInInspector] public float percentage;
+	[HideInInspector] public float weight;
+
 
 	public float length
 	{
@@ -35,5 +40,18 @@ public class LevelPiece : MonoBehaviour
 		{
 			gravity.direction = -transform.up;
 		}
+	}
+
+	//Used for calculation of level progress
+	public float CalcPercentage(Vector3 position)
+	{
+		Vector3 direction = (end.position - start.position).normalized;
+
+		float startPoint = Vector3.Project(start.position, direction).z;
+		float endPoint = Vector3.Project(end.position, direction).z;
+
+		float curPoint = Vector3.Project(position, direction).z;
+
+		return Mathf.InverseLerp(startPoint, endPoint, curPoint);
 	}
 }

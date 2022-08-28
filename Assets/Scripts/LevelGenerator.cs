@@ -7,35 +7,7 @@ TODO:
 Make this use multithreading - so user can play while loads ahead
 
 */
-public class Level
-{
-	public float destroyTime;
-	public int levelNo;
-	public LevelPiece[] pieces;
-	public LevelEnd end;
-	public LevelGenerator levelGenerator;
 
-	public Level(LevelGenerator levelGenerator, LevelPiece[] pieces, LevelEnd end, float destroyTime)
-	{
-		this.levelGenerator = levelGenerator;
-		this.end = end;
-		this.pieces = pieces;
-		this.destroyTime = destroyTime;
-
-		levelGenerator.levels.Add(this);
-		end.tripwire.OnTripped += DestroySelf;
-	}
-
-	private void DestroySelf(GameObject caller)
-	{
-		foreach (LevelPiece piece in this.pieces)
-		{
-			MonoBehaviour.Destroy(piece, destroyTime);
-		}
-
-		levelGenerator.levels.Remove(this);
-	}
-}
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -113,7 +85,7 @@ public class LevelGenerator : MonoBehaviour
 	private LevelPiece lastObstacle;
 	private System.Random randomNumberGenerator;
 
-	private void Awake()
+	private void Start()
 	{
 		//Set last obstacle
 		lastObstacle = startGamePiece;
@@ -138,7 +110,7 @@ public class LevelGenerator : MonoBehaviour
 
 			// if (Random.Range(0f, 1f) <= bonusPrefabsSpawnChance) SpawnBonus();
 
-			if (randomNumberGenerator.Next(0, 1000) <= sideThingSpawnChance * 1000f) SpawnSideThing();
+			// if (randomNumberGenerator.Next(0, 1000) <= sideThingSpawnChance * 1000f) SpawnSideThing();
 		}
 
 		LevelEnd levelEnd = SpawnEnd();

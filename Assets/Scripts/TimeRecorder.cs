@@ -19,19 +19,7 @@ public class TimeRecorder : MonoBehaviour
 		}
 	}
 
-	public class Record { };
-	public class WorldRecord : Record
-	{
-		public Vector3 position;
-		public Quaternion rotation;
 
-		public WorldRecord(Transform transform)
-		{
-			position = transform.position;
-			rotation = transform.rotation;
-		}
-	}
-	public class DestroyRecord : Record { }
 
 	public static void RecordAllTimes()
 	{
@@ -59,10 +47,7 @@ public class TimeRecorder : MonoBehaviour
 		return Time.time;
 	}
 
-	private static void RecordDestory()
-	{
-
-	}
+	private static void RecordDestory() { }
 
 	// Start is called before the first frame update
 	void Start()

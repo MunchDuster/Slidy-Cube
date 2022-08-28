@@ -49,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
 		if (isGaming)
 		{
 			UpdateDirections();
-			UpdateIsGrounded();
 			ApplyForces();
 			ApplyTorques();
 		}
@@ -91,14 +90,27 @@ public class PlayerMovement : MonoBehaviour
 	//Alignment torque
 	private void ApplyTorques()
 	{
-		//alignment
-		float yAngle = Vector3.SignedAngle(Vector3.forward, forward, -down) % 180;
-		float damping = -rb.angularVelocity.y * dampingAmount;
-		float reAlignmentTorque = -yAngle * antiSpinTorque + damping;
+		Vector3 angleBasis = forward;
+		Vector3 axis = -down;
 
-		Vector3 spinTorque = Vector3.up * reAlignmentTorque;
+		//alignment
+		Vector3 yTorque = AlignAxis(forward, transform.forward, -down);
+		Vector3 xTorque = Vector3.zero; //AlignAxis(right, transform.right, right);
+
+		Vector3 spinTorque = xTorque + yTorque;
 
 		rb.AddTorque(spinTorque * Time.fixedDeltaTime);
+	}
+	private Vector3 AlignAxis(Vector3 angle0, Vector3 angle1, Vector3 axis)
+	{
+		float angle = Vector3.SignedAngle(angle0, angle1, axis) % 180;
+
+		float angularVelocity = Vector3.Project(rb.angularVelocity, axis).y;
+
+		float damping = angularVelocity * dampingAmount;
+		float reAlignmentTorque = -angle * antiSpinTorque + damping;
+
+		return axis * reAlignmentTorque;
 	}
 
 	//Re-evaluate directions based on raycast (direction: current down).
@@ -121,10 +133,12 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	//Raycast down to hit ground
-	private void UpdateIsGrounded()
+	private void OnCollisionEnter(Collision collision)
 	{
-		isGrounded = Physics.Raycast(transform.position, down, 0.55f);
-		if (isGrounded) hasJumped = false;
+		if (collision.gameObject.layer == layerMask) isGrounded = true;
+	}
+	private void OnCollisionExit(Collision collision)
+	{
+		if (collision.gameObject.layer == layerMask) isGrounded = false;
 	}
 }
